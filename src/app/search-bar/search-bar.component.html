@@ -1,0 +1,7 @@
+<p>search-bar works!</p>
+<form name="Form">
+    <input id="search" type="text" placeholder="Find everything !">
+    <button  (click)="getImages()">Search !</button>
+</form> 
+
+<img *ngFor="let a of tab_images" class="fit-picture" src="https://live.staticflickr.com/{{a.server}}/{{a.id}}_{{a.secret}}.jpg" alt="">
