@@ -9,8 +9,21 @@ import { FlickrService } from '../flickr.service';
 export class ImagesPresentationComponent implements OnInit {
   @Input () message :boolean=false;
   @Input() list_images:any[] = [];
+  position :number = 0
   constructor(private service:FlickrService) { }
 
+  AddingOne(){
+    this.position = this.position + 1  
+    this.position = this.position % this.list_images.length;
+  
+  }
+  RemovingOne()
+  {
+    this.position = this.position -1;
+    if (this.position == -1 ){
+      this.position = this.list_images.length - 1;
+    }
+  }
   ngOnInit(): void {
   }
 
