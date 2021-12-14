@@ -1,6 +1,9 @@
 <p>search-bar works!</p>
 <div>
-<input id="search" type="text" placeholder="Find everything !">
-<button  (click)="getImages()">Search !</button>
+    <input id="search" type="text" placeholder="Find everything !">
+    <button  (click)="getImages()">Search !</button>
+    <br>
+    <label>Slider ?<input type="checkbox" (change)="changeAffichage()" [checked] = "affichage"></label>
+    <p>{{affichage}}</p>
 </div>
-<img *ngFor="let a of tab_images" class="fit-picture" src="https://live.staticflickr.com/{{a.server}}/{{a.id}}_{{a.secret}}.jpg" alt="">
+<images-presentation [message]=affichage [list_images]=tab_images></images-presentation>
