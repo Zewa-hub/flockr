@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { map } from 'rxjs/operators';
+import {
+  debounceTime, distinctUntilChanged, switchMap
+} from 'rxjs/operators';
 //import xml2js from 'xml2js';  
 import { Observable, throwError } from 'rxjs';
 export interface PhotosFlickr {
@@ -33,10 +36,10 @@ export class SearchBarComponent implements OnInit {
     })
   }
 
-  getImagesBySearch(search:string) : Observable<PhotosFlickr>
+  getImagesBySearch(search:string, parameter? : any) : Observable<PhotosFlickr>
   {
     return this.http.get<PhotosFlickr>("https://www.flickr.com/services/rest/",{
-       params: {
+      params: {         
           text: search,
           method: 'flickr.photos.search',
           format: 'json',
@@ -48,56 +51,29 @@ export class SearchBarComponent implements OnInit {
           api_key: '10f83f31283d58084c74937adbb8b561'
       }
     })
-    .pipe(map((response : any) => response.photos.photo));
+    //.pipe(map((response : any) => response.photos.photo));
 
   }
 
-  
-  getImages(): void {
+  getImages():void {
     var inputValue = (<HTMLInputElement>document.getElementById("search")).value;
     if (inputValue === "")
     {
+      this.getAnyImages().subscribe(data => {
+        this.tab_images = data.photos.photo
+      })
     }
     else
     {
       this.getImagesBySearch(inputValue).subscribe(data => {
-        console.log("oui")
-      })
+        console.log(data)
+        this.tab_images = data.photos.photo}
+      )
     }
   }
   ngOnInit(): void {
     this.getAnyImages().subscribe(data => {
-      console.log(data.photos.photo)
-      for (let i of data.photos.photo)
-      {
-        console.log(i.server)
-      }
       this.tab_images = data.photos.photo
     })
   }
-/*
-  parseXML(data : any) {  
-    return new Promise(resolve => {  
-      var k: string | number;  
-      let arr : any[] =[];  
-      let parser = new xml2js.Parser(  
-          {  
-            trim: true,  
-            explicitArray: true  
-          });  
-      parser.parseString(data, function (err :any , result :any) {  
-        var obj = result.Employee;  
-        for (k in obj.emp) {  
-          var item = obj.emp[k];  
-          arr.push({  
-            id: item.id[0],  
-            name: item.name[0],  
-            gender: item.gender[0],  
-            mobile: item.mobile[0]  
-          });  
-        }  
-        resolve(arr);  
-      });
-    });
-  }*/
 }
