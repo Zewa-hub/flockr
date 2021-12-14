@@ -2,6 +2,7 @@
     <img *ngFor="let a of list_images" class="fit-picture" src="https://live.staticflickr.com/{{a.server}}/{{a.id}}_{{a.secret}}.jpg" alt="">
 </div>
 <ng-template #Slider>
+    <p>{{position + 1}}/ {{list_images.length}}</p>
     <img class="fit-picture" src="https://live.staticflickr.com/{{list_images[position].server}}/{{list_images[position].id}}_{{list_images[position].secret}}.jpg" alt="">
     <div>
         <button (click)="RemovingOne()"><-</button>

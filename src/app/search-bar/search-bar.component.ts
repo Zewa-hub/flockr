@@ -15,7 +15,6 @@ import { FlickrService } from '../flickr.service';
 export class SearchBarComponent implements OnInit {
   affichage :boolean = true;
   tab_images :any[] = [];
-
   constructor(private http : HttpClient, private service : FlickrService) { }
   changeAffichage() :void
   {
@@ -29,7 +28,7 @@ export class SearchBarComponent implements OnInit {
   }
   getImages():void {
     var inputValue = (<HTMLInputElement>document.getElementById("search")).value;
-    if (inputValue === "")
+    if (!inputValue)
     {
       this.service.getAnyImages().subscribe(data => {
         this.tab_images = data.photos.photo
@@ -38,7 +37,7 @@ export class SearchBarComponent implements OnInit {
     else
     {
       this.service.getImagesBySearch(inputValue).subscribe(data => {
-        console.log(data)
+    
         this.tab_images = data.photos.photo}
       )
     }

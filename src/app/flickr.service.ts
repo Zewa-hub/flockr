@@ -17,8 +17,6 @@ export interface PhotosFlickr {
 })
 
 export class FlickrService {
-  
-
   constructor(private http : HttpClient) { }
   getAnyImages() : Observable<PhotosFlickr>{
     return this.http.get<PhotosFlickr>("https://www.flickr.com/services/rest/",{
@@ -26,6 +24,7 @@ export class FlickrService {
         method: 'flickr.photos.getRecent',
         format: 'json',
         api_key: '10f83f31283d58084c74937adbb8b561',
+        extras: 'tags,date_taken,owner_name,url_q,url_m',
         nojsoncallback: "?"
       }
     })

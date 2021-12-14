@@ -3,7 +3,6 @@
     <input id="search" type="text" placeholder="Find everything !">
     <button  (click)="getImages()">Search !</button>
     <br>
-    <label>Slider ?<input type="checkbox" (change)="changeAffichage()" [checked] = "affichage"></label>
-    <p>{{affichage}}</p>
+    <label>List <input type="checkbox" (change)="changeAffichage()" [checked] = "affichage"></label>
 </div>
 <images-presentation [message]=affichage [list_images]=tab_images></images-presentation>

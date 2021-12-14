@@ -12,6 +12,13 @@ export class ImagesPresentationComponent implements OnInit {
   position :number = 0
   constructor(private service:FlickrService) { }
 
+  ngOnChanges(changes: any) {
+    /** Fire any time employee changes */
+    if (changes.message || changes.list_images) {
+      this.position =0
+    }
+  }
+  
   AddingOne(){
     this.position = this.position + 1  
     this.position = this.position % this.list_images.length;
