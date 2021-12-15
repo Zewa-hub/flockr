@@ -11,6 +11,15 @@ export interface PhotosFlickr {
     }];
   }
 }
+export interface CommentsFlickr {
+  comments: {
+    photo_id:string,
+    comment: [{
+      authorname:string,
+      _content: string
+    }]
+  }
+}
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +33,7 @@ export class FlickrService {
         method: 'flickr.photos.getRecent',
         format: 'json',
         api_key: '10f83f31283d58084c74937adbb8b561',
-        extras: 'tags,date_taken,owner_name,url_q,url_m',
+        extras: 'tags,date_taken,owner_name,url_q,url_m,o_dims,geo',
         nojsoncallback: "?"
       }
     })
@@ -40,10 +49,36 @@ export class FlickrService {
           tag_mode: 'all',
           media: 'photos',
           per_page: '15',
-          extras: 'tags,date_taken,owner_name,url_q,url_m', 
+          accuracy : 16, 
+          extras: 'tags,date_taken,owner_name,url_q,url_m,o_dims,geo', 
           api_key: '10f83f31283d58084c74937adbb8b561'
       }
     })
     //.pipe(map((response : any) => response.photos.photo));
   }
+  getImagesOfPeople(user:string) : Observable<PhotosFlickr>{
+    return this.http.get<PhotosFlickr>("https://www.flickr.com/services/rest/",{
+      params: {
+        method: 'flickr.people.getPhotos',
+        format: 'json',
+        user_id: user,
+        per_page: '3',
+        api_key: '10f83f31283d58084c74937adbb8b561',
+        extras: 'tags,date_taken,owner_name,url_q,url_m,o_dims,geo',
+        nojsoncallback: "?"
+      }
+    })
+  }
+  getCommentOfPhoto(id_photo:string) : Observable<CommentsFlickr>{
+    return this.http.get<CommentsFlickr>("https://www.flickr.com/services/rest/",{
+      params: {
+        method: 'flickr.photos.comments.getList',
+        format: 'json',
+        photo_id: id_photo,
+        api_key: '10f83f31283d58084c74937adbb8b561',
+        nojsoncallback: "?"
+      }
+    })
+  }
+
 }

@@ -1,5 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FlickrService } from '../flickr.service';
+import { FlickrService, PhotosFlickr } from '../flickr.service';
+import {  NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbdModalContentComponent } from "../ngbd-modal-content/ngbd-modal-content.component";
 
 @Component({
   selector: 'images-presentation',
@@ -10,7 +12,7 @@ export class ImagesPresentationComponent implements OnInit {
   @Input () message :boolean=false;
   @Input() list_images:any[] = [];
   position :number = 0
-  constructor(private service:FlickrService) { }
+  constructor(private service:FlickrService,private modalService: NgbModal) { }
 
   ngOnChanges(changes: any) {
     /** Fire any time employee changes */
@@ -33,5 +35,11 @@ export class ImagesPresentationComponent implements OnInit {
   }
   ngOnInit(): void {
   }
-
+  OpenDialog(image :any)
+  {
+    
+    const modalRef = this.modalService.open(NgbdModalContentComponent);
+    modalRef.componentInstance.image = image;
+  }
+  
 }

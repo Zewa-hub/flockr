@@ -44,6 +44,7 @@ export class SearchBarComponent implements OnInit {
   }
   ngOnInit(): void {
     this.service.getAnyImages().subscribe(data => {
+      console.log(data)
       this.tab_images = data.photos.photo
     })
   }

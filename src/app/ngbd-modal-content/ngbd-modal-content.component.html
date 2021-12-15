@@ -1,0 +1,56 @@
+<div class="modal-header">
+    <div *ngIf="image.title; else NoTitle">
+        <h4 class="modal-title">{{image.title}} </h4>
+    </div>
+    <ng-template #NoTitle>
+        <h4 class="modal-title">Sans titre</h4>
+    </ng-template>
+    <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <img src="{{image.url_q}}" alt="pls reload the page">
+      <br>
+      <div class="data">
+        <div *ngIf="image.height_m; else NoSize">
+            <p><strong>Taille:</strong> {{image.height_m}} x {{image.width_m}} </p>
+        </div>
+        <ng-template #NoSize>
+            <p><strong>Taille:</strong> {{image.height_q}} x {{image.width_q}} (approx) </p>
+        </ng-template>
+        
+        <p><strong>Auteur:</strong>  {{image.ownername}} </p>
+        <p><strong>Date de publication:</strong>  {{image.datetaken}} </p>
+        <div *ngIf="image.longitude; else NoGeo">
+            <p><strong>Localisation:</strong> {{image.longitude}}, {{image.latitude}} </p>
+        </div>
+        <ng-template #NoGeo>
+            <p><strong>Localisation:</strong> Inconnu </p>
+        </ng-template>
+        <a href="https://live.staticflickr.com/{{image.server}}/{{image.id}}_{{image.secret}}.jpg"> Agrandir l'image</a>
+      </div>
+    </div>
+    <div *ngIf="image.tags; else NoTags">
+        <p><strong>Tags:</strong> {{image.tags}} </p>
+    </div>
+    <ng-template #NoTags>
+        <p><strong>Tags:</strong> Aucun tags </p>
+    </ng-template>
+    
+    <hr>
+    <strong>Commentaire :</strong>
+    <div *ngIf="IsAnyComments; else NoComments">
+        <p *ngFor="let a of list_comments"><b>{{a.authorname}}:</b> {{a._content}} </p>
+    </div>
+    <ng-template #NoComments>
+        <p>Aucun commentaires </p>
+    </ng-template>
+    <hr>
+    <p><strong>Autres photos de l'auteur :</strong></p>
+    <img *ngFor="let a of author_images" class="fit-picture" src="{{a.url_q}}" alt="">
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="activeModal.close('Close click')">Close</button>
+</div>

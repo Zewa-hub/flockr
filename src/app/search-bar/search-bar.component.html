@@ -1,8 +1,14 @@
 <p>search-bar works!</p>
 <div>
     <input id="search" type="text" placeholder="Find everything !">
+    <label for="date_min">Date minimum</label><input id="date_min" type="date">
+    <label for="date_min">Date maximum</label><input id="date_max" type="date">
+    <label for="tag">Tag</label><input id="tag" type="text" placeholder="add tag for your research !">
+    <label for="tag">Auteur</label><input id="tag" type="text" placeholder="Search by author">
+    <p>pagination + barre de chargement + taille de page modifiable +sort by date</p>
     <button  (click)="getImages()">Search !</button>
     <br>
     <label>List <input type="checkbox" (change)="changeAffichage()" [checked] = "affichage"></label>
+    <label>SafeSearch <input type="checkbox" name="SafeSearch" checked="true"></label>
 </div>
 <images-presentation [message]=affichage [list_images]=tab_images></images-presentation>
