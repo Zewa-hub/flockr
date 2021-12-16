@@ -58,8 +58,3 @@ Pour le bon fonctionnement de l'appli, je vous prie de télécharger entièremen
 
 
 
-
-
-
-
-Mairsi Ogusteuh
