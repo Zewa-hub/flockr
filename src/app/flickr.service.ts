@@ -5,6 +5,7 @@ import { Observable, throwError } from 'rxjs';
 export interface PhotosFlickr {
   photos: {
     pages :number,
+    total :number,
     photo:[{
       server: string,
       id: string,

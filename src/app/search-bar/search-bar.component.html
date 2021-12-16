@@ -12,32 +12,56 @@
         <button  (click)="getImages(1)">Search !</button>
     </ng-template>
     <br>
-    <label>List <input type="checkbox" (change)="changeAffichageMode()" [checked] = "affichageMode"></label>
-    <label>SafeSearch <input type="checkbox" name="SafeSearch" checked="true"></label>
-    <label>Authors <input type="checkbox" (change)="changeAuthorMode()" [checked] = "authorMode"></label>
-</div>
-
-<div *ngIf="page_number && authorMode"> 
-    <p>Page: {{page_position}} / {{page_number}}</p>
-    <div>
-        <button (click)="getImagesOfAuthor(page_position-1)"><-</button>
-        <button (click)="getImagesOfAuthor(page_position+1)">-></button>
+    <div class="custom-control custom-switch">
+       <input type="checkbox" (change)="changeAffichageMode()" [checked] = "affichageMode" class="custom-control-input" id ="afficheMode">
+       <label class="custom-control-label" for="afficheMode">Affichage en liste</label>
     </div>
+    <div class="custom-control custom-switch">
+        <input type="checkbox" name="SafeSearch" checked="true" class="custom-control-input" id="safeSearch">
+        <label class="custom-control-label" for="SafeSearch">SafeSearch</label>
+    </div>
+    <div class="custom-control custom-switch">
+        <input type="checkbox" (change)="changeAuthorMode()" [checked] = "authorMode" class="custom-control-input" id="authorMode">
+        <label class="custom-control-label" for="authorMode">Recherche par auteur</label>
+    </div>
+</div>
+<hr>
+<div *ngIf="page_number && authorMode">
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-end">
+        <li>
+            <a class="page-link" href="#" (click)="getImagesOfAuthor(page_position-1)">Previous</a>
+        </li>
+          <li class="page-item"><a class="page-link" href="#">{{page_position}} / {{page_number}}</a></li>
+          <li class="page-item">
+            <a class="page-link" href="#" (click)="getImagesOfAuthor(page_position+1)">Next</a>
+          </li>
+        </ul>
+      </nav>
 </div>
 <div *ngIf="page_number && !authorMode"> 
-    <p>Page: {{page_position}} / {{page_number}}</p>
-    <div>
-        <button (click)="getImages(page_position-1)"><-</button>
-        <button (click)="getImages(page_position+1)">-></button>
-    </div>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-end">
+        <li>
+            <a class="page-link" href="#" (click)="getImages(page_position-1)">Previous</a>
+        </li>
+          <li class="page-item"><a class="page-link" href="#">{{page_position}} / {{page_number}}</a></li>
+          <li class="page-item">
+            <a class="page-link" href="#" (click)="getImages(page_position+1)">Next</a>
+          </li>
+        </ul>
+      </nav>
 </div>
 <div *ngIf="error">
-    <p>Erreur dans la requête</p>
+    <div class="alert alert-warning" role="alert">
+        {{this.errorMessage}}
+      </div>
     
 </div>
-<div *ngIf="loading; else NoLoading">
-    <div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-    
+<div *ngIf="loading; else NoLoading" class="d-flex justify-content-center">
+    <div class="spinner-border text-primary"  style="width: 5rem; height: 5rem;" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
 </div>
 <ng-template #NoLoading>
     <images-presentation [message]=affichageMode [list_images]=tab_images></images-presentation>

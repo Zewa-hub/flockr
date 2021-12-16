@@ -1,12 +1,20 @@
 <!-- <button class="btn btn-lg btn-outline-primary" (click)="OpenDialog()">Launch demo modal</button> -->
-<div *ngIf="message; else Slider">
-    <img *ngFor="let a of list_images" class="fit-picture" src="https://live.staticflickr.com/{{a.server}}/{{a.id}}_{{a.secret}}.jpg" alt="" (click)="OpenDialog(a)">
+<div *ngIf="message" class="d-flex justify-content-center flex-wrap mb-1 mt-1 pr-5 pl-5" >
+        <img *ngFor="let a of list_images" class="fit-picture" src="https://live.staticflickr.com/{{a.server}}/{{a.id}}_{{a.secret}}.jpg" alt="" (click)="OpenDialog(a)" class="mb-auto mt-5 mr-auto ml-auto">
 </div>
-<ng-template #Slider>
-    <img class="fit-picture" src="https://live.staticflickr.com/{{list_images[position].server}}/{{list_images[position].id}}_{{list_images[position].secret}}.jpg" alt="" (click)="OpenDialog(list_images[position])">
-    <p>{{position + 1}}</p>
-    <div>
-        <button (click)="RemovingOne()"><-</button>
-        <button (click)="AddingOne()">-></button>
+<div *ngIf="!message && list_images[position]" class="d-flex justify-content-center">
+    <div id="carouselExampleControls" class="carousel slide w-50 border border-primary" data-ride="carousel">
+        <div class="carousel-inner bg-dark">
+          <div class="carousel-item active d-flex justify-content-center">
+            <img class="d-block w-75" src="https://live.staticflickr.com/{{list_images[position].server}}/{{list_images[position].id}}_{{list_images[position].secret}}.jpg"  (click)="OpenDialog(list_images[position])" alt="First slide">
+          </div>
+        <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev" (click)="RemovingOne()">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next" (click)="AddingOne()" >
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="sr-only">Next</span>
+        </a>
+      </div>
     </div>
-</ng-template>

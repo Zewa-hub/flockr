@@ -21,6 +21,7 @@ export class SearchBarComponent implements OnInit {
   page_position:number = 1;
   loading:boolean = false;
   error:boolean = false;
+  errorMessage :string ="";
 
   constructor(private http : HttpClient, private service : FlickrService) { }
   changeAffichageMode() :void
@@ -53,7 +54,7 @@ export class SearchBarComponent implements OnInit {
   }
   getImages(page:number):void {
     this.loading =true
-    this.loading =false
+    this.error =false
     this.page_position = this.regulatePagePosition(page)
     var inputValue = (<HTMLInputElement>document.getElementById("search")).value;
     var dateMinValue = (<HTMLInputElement>document.getElementById("date_min")).value;
@@ -66,6 +67,11 @@ export class SearchBarComponent implements OnInit {
         this.service.getImagesBySearch(inputValue,dateMinValue,dateMaxValue,this.page_position).subscribe(data => {
           this.tab_images = data.photos.photo
           this.loading =false
+          if (data.photos.total == 0)
+          {
+            this.error =true
+            this.errorMessage = "Aucunes images ne correspond à vos critères"
+          }
           if(data.photos.pages > 100)
             this.page_number = 100
           else
@@ -79,6 +85,11 @@ export class SearchBarComponent implements OnInit {
       
           this.tab_images = data.photos.photo
           this.loading =false
+          if (data.photos.total == 0)
+          {
+            this.error =true
+            this.errorMessage = "Aucunes images ne correspond à vos critères"
+          }
           if(data.photos.pages > 100)
             this.page_number = 100
           else
@@ -91,6 +102,8 @@ export class SearchBarComponent implements OnInit {
     {
       this.service.getAnyImages().subscribe(data => {
         console.log(data)
+        this.error =true
+        this.errorMessage = "Veuillez mettre des critères de recherches plus précis"
         this.tab_images = data.photos.photo
         this.page_number = 0;
         this.loading =false
@@ -126,7 +139,11 @@ getImagesOfAuthor(page:number): void{
       {
         this.service.getImagesOfPeople(data.user.id,this.service.images_per_page,this.page_position).subscribe(data => {
           this.tab_images = data.photos.photo
-          
+          if (data.photos.total == 0)
+          {
+            this.error =true
+            this.errorMessage = "L'utilisateur ne possède aucunes images"
+          }
           if(data.photos.pages > 10)
             this.page_number = 100
           else
@@ -138,6 +155,7 @@ getImagesOfAuthor(page:number): void{
         this.tab_images = data.photos.photo
         this.page_number = 0;
         this.error = true;
+        this.errorMessage = "L'utilisateur n'a pas été trouvé "
       })
     }
   })
