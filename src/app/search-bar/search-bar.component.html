@@ -1,34 +1,65 @@
-<p>search-bar works!</p>
+
+<nav class="navbar navbar-light">
+    <a class="navbar-brand" href="#" (click)="getImagesHome(false,'')"><img src="../../assets/flockr_zoom.png" width="100" height="100"></a>
+  </nav>
+
 <div>
-    <div *ngIf="authorMode; else NoAuthor">
-        <label for="author">Auteur</label><input id="author" type="text" placeholder="Search by author">
-        <button  (click)="getImagesOfAuthor(1)">Search !</button>
+    <div *ngIf="authorMode; else NoAuthor" class="d-flex justify-content-center"> 
+        <div class="input-group mb-3 w-25 ">
+            <div class="input-group-prepend">
+                <label for="author" class="input-group-text" >Auteur</label>
+            </div>
+            <input id="author" type="text" placeholder="Search by author" class="form-control">
+            <div class="input-group-append">
+                <button class="btn btn-outline-primary" (click)="getImagesOfAuthor(1)">Search !</button>
+            </div>
+        </div>
     </div>
     <ng-template #NoAuthor>
-        <input id="search" type="text" placeholder="Find everything !">
-        <label for="date_min">Date minimum</label><input id="date_min" type="date">
-        <label for="date_max">Date maximum</label><input id="date_max" type="date">
-        <label for="tag">Tag</label><input id="tag" type="text" placeholder="add tag for your research !">
-        <button  (click)="getImages(1)">Search !</button>
+        <div class="d-flex justify-content-center">
+            <div class="form-inline w-25">
+                <div class="form-group col-md-6">
+                    <label for="search" >Search</label>
+                    <input id="search" type="text" placeholder="Find everything !" class="form-control">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="tag" >Tags</label>
+                    <input id="tag" type="text" placeholder="add tag for your research !" class="form-control">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="date_min" >Date mini</label>
+                    <input id="date_min" type="date" class="form-control">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="date_max" >Date maxi</label>
+                    <input id="date_max" type="date"  class="form-control">
+                </div>
+        
+                    
+        </div>
+        <button class="btn btn-outline-primary" (click)="getImages(1)">Search !</button>
+    </div>
     </ng-template>
     <br>
-    <div class="custom-control custom-switch">
-       <input type="checkbox" (change)="changeAffichageMode()" [checked] = "affichageMode" class="custom-control-input" id ="afficheMode">
-       <label class="custom-control-label" for="afficheMode">Affichage en liste</label>
-    </div>
-    <div class="custom-control custom-switch">
-        <input type="checkbox" name="SafeSearch" checked="true" class="custom-control-input" id="safeSearch">
-        <label class="custom-control-label" for="SafeSearch">SafeSearch</label>
-    </div>
-    <div class="custom-control custom-switch">
-        <input type="checkbox" (change)="changeAuthorMode()" [checked] = "authorMode" class="custom-control-input" id="authorMode">
-        <label class="custom-control-label" for="authorMode">Recherche par auteur</label>
+    <div class="d-flex justify-content-center">
+        <div class="custom-control custom-switch mr-2 ml-2">
+            <input type="checkbox" (change)="changeBooleanValue('affichage')" [checked] = "affichageMode" class="custom-control-input" id ="afficheMode">
+            <label class="custom-control-label" for="afficheMode">Affichage en liste</label>
+        </div>
+        <div class="custom-control custom-switch  mr-2 ml-2">
+            <input type="checkbox" (change)="changeBooleanValue('safe')" [checked] = "safeMode" class="custom-control-input" id="safeSearch" checked>
+            <label class="custom-control-label" for="safeSearch">SafeSearch</label>
+        </div>
+        <div class="custom-control custom-switch  mr-2 ml-2">
+            <input type="checkbox" (change)="changeBooleanValue('author')" [checked] = "authorMode" class="custom-control-input" id="authorMode">
+            <label class="custom-control-label" for="authorMode">Recherche par auteur</label>
+        </div>
     </div>
 </div>
 <hr>
 <div *ngIf="page_number && authorMode">
     <nav aria-label="Page navigation example">
-        <ul class="pagination justify-content-end">
+        <ul class="pagination justify-content-center">
         <li>
             <a class="page-link" href="#" (click)="getImagesOfAuthor(page_position-1)">Previous</a>
         </li>
@@ -41,7 +72,7 @@
 </div>
 <div *ngIf="page_number && !authorMode"> 
     <nav aria-label="Page navigation example">
-        <ul class="pagination justify-content-end">
+        <ul class="pagination justify-content-center">
         <li>
             <a class="page-link" href="#" (click)="getImages(page_position-1)">Previous</a>
         </li>
@@ -66,4 +97,33 @@
 <ng-template #NoLoading>
     <images-presentation [message]=affichageMode [list_images]=tab_images></images-presentation>
 </ng-template>
+<div *ngIf="page_number && authorMode && affichageMode">
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+        <li>
+            <a class="page-link" href="#" (click)="getImagesOfAuthor(page_position-1)">Previous</a>
+        </li>
+          <li class="page-item"><a class="page-link" href="#">{{page_position}} / {{page_number}}</a></li>
+          <li class="page-item">
+            <a class="page-link" href="#" (click)="getImagesOfAuthor(page_position+1)">Next</a>
+          </li>
+        </ul>
+      </nav>
+</div>
+<div *ngIf="page_number && !authorMode && affichageMode"> 
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+        <li>
+            <a class="page-link" href="#" (click)="getImages(page_position-1)">Previous</a>
+        </li>
+          <li class="page-item"><a class="page-link" href="#">{{page_position}} / {{page_number}}</a></li>
+          <li class="page-item">
+            <a class="page-link" href="#" (click)="getImages(page_position+1)">Next</a>
+          </li>
+        </ul>
+      </nav>
+</div>
 <hr>
+<footer class="text-center text-lg-start">
+    <img  (click)="getImagesHome(false,'')" src="../../assets/flockr_zoom.png" width="100" height="100">
+  </footer>

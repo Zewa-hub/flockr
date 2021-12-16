@@ -15,12 +15,15 @@ export class NgbdModalContentComponent implements OnInit {
   IsAnyComments: boolean = false
   constructor(public activeModal: NgbActiveModal,private service:FlickrService) {}
   ngOnInit(): void {
-    console.log(this.image)
-    this.service.getImagesOfPeople(this.image.owner,3,1).subscribe(data => {
+    this.service.getImagesOfPeople(this.image.owner,5,1,3).subscribe(data => {
       this.author_images = data.photos.photo
     })
     this.service.getCommentOfPhoto(this.image.id).subscribe(data => {
       this.list_comments = data.comments.comment
+      for (let i of data.comments.comment)
+      {
+        i._content = i._content.replace(/<[^>]*>/g, '');
+      }
       if (data.comments.comment)
       {
         this.IsAnyComments = true

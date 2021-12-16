@@ -10,10 +10,10 @@
     </button>
   </div>
   <div class="modal-body">
-    <div class="row">
+    <div  class="d-flex justify-content-start flex-wrap mb-1 mt-1 mr-2 ml-2 flex-row w-100">
       <img src="{{image.url_q}}" alt="pls reload the page">
       <br>
-      <div class="data">
+      <div class="data d-flex flex-wrap mb-1 mt-1 mr-2 ml-2 w-75 justify-content-start flex-column">
         <div *ngIf="image.height_m; else NoSize">
             <p><strong>Taille:</strong> {{image.height_m}} x {{image.width_m}} </p>
         </div>
@@ -29,15 +29,18 @@
         <ng-template #NoGeo>
             <p><strong>Localisation:</strong> Inconnu </p>
         </ng-template>
+        <div *ngIf="image.tags; else NoTags">
+            <p><strong>Tags:</strong> {{image.tags}} </p>
+        </div>
+        <ng-template #NoTags>
+            <p><strong>Tags:</strong> Aucun tags </p>
+        </ng-template>
         <a href="https://live.staticflickr.com/{{image.server}}/{{image.id}}_{{image.secret}}.jpg"> Agrandir l'image</a>
       </div>
+      
+      
     </div>
-    <div *ngIf="image.tags; else NoTags">
-        <p><strong>Tags:</strong> {{image.tags}} </p>
-    </div>
-    <ng-template #NoTags>
-        <p><strong>Tags:</strong> Aucun tags </p>
-    </ng-template>
+    
     
     <hr>
     <strong>Commentaire :</strong>
@@ -49,7 +52,9 @@
     </ng-template>
     <hr>
     <p><strong>Autres photos de l'auteur :</strong></p>
-    <img *ngFor="let a of author_images" class="fit-picture" src="{{a.url_q}}" alt="">
+    <div class="d-flex justify-content-center mb-1 mt-1 mr-5 ml-5">
+        <img *ngFor="let a of author_images" class="fit-picture mb-auto mt-auto mr-auto ml-auto" src="{{a.url_q}}" alt="">
+    </div>
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-outline-dark" (click)="activeModal.close('Close click')">Close</button>

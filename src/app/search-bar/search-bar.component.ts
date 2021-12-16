@@ -14,35 +14,32 @@ import { FlickrService } from '../flickr.service';
 })
 export class SearchBarComponent implements OnInit {
   affichageMode :boolean = true;
-  tab_images :any[] = [];
   authorMode :boolean = false;
-  nomRecherche:string ="";
+  safeMode :boolean = true;
+  tab_images :any[] = [];
   page_number:number = 0;
   page_position:number = 1;
-  loading:boolean = false;
+  loading:boolean = true;
   error:boolean = false;
   errorMessage :string ="";
 
   constructor(private http : HttpClient, private service : FlickrService) { }
-  changeAffichageMode() :void
-  {
-    if (this.affichageMode)
-      this.affichageMode = false;
-    else
-      this.affichageMode =true;
+  ngOnInit(): void {
+    this.getImagesHome(false,"")
   }
-  changeAuthorMode() :void
-  {
-    if (this.authorMode)
-      this.authorMode= false;
+  changeBooleanValue(variable :any) : void {
+    if (variable == "affichage")
+      this.affichageMode = !this.affichageMode
+    else if (variable == "author")
+      this.authorMode = !this.authorMode
+    else if (variable == "safe")
+      this.safeMode = !this.safeMode
     else
-      this.authorMode =true;
+      console.log("error")
   }
   regulatePagePosition(page:number):number{
     if (this.page_number == 0)
-    {
       return 1
-    }
     if(page > 0){
       if (page % this.page_number == 0)
         return this.page_number
@@ -52,6 +49,28 @@ export class SearchBarComponent implements OnInit {
     else 
       return this.page_number;
   }
+  manageResult(data:any,err_message:string,err?:boolean):void{
+    this.tab_images = data.photos.photo
+    this.loading =false
+    if (data.photos.total == 0 || err)
+    {
+      this.error =true
+      this.errorMessage = err_message
+    }
+    if(data.photos.pages > 100)
+      this.page_number = 100
+    else
+      this.page_number = data.photos.pages;
+  }
+
+  getImagesHome(err :boolean, err_message: string):void{
+    this.loading =true
+    this.error =false
+    this.service.getAnyImages().subscribe(data => {
+      this.manageResult(data,err_message,err)
+      this.page_number = 0;
+    })
+  }
   getImages(page:number):void {
     this.loading =true
     this.error =false
@@ -60,105 +79,45 @@ export class SearchBarComponent implements OnInit {
     var dateMinValue = (<HTMLInputElement>document.getElementById("date_min")).value;
     var dateMaxValue = (<HTMLInputElement>document.getElementById("date_max")).value;
     var tagValue = (<HTMLInputElement>document.getElementById("tag")).value;
+    var safeSearch = '1'
+    if (!this.safeMode)
+      safeSearch = '3'
     if (inputValue || tagValue)
     {
       if (!tagValue)
-      {
-        this.service.getImagesBySearch(inputValue,dateMinValue,dateMaxValue,this.page_position).subscribe(data => {
-          this.tab_images = data.photos.photo
-          this.loading =false
-          if (data.photos.total == 0)
-          {
-            this.error =true
-            this.errorMessage = "Aucunes images ne correspond à vos critères"
-          }
-          if(data.photos.pages > 100)
-            this.page_number = 100
-          else
-            this.page_number = data.photos.pages;
-            
+        this.service.getImagesBySearch(inputValue,dateMinValue,dateMaxValue,this.page_position,safeSearch).subscribe(data => {
+          this.manageResult(data,"Aucunes images ne correspond à vos critères")
         })
-      }
       else
-      {
-        this.service.getImagesBySearch(inputValue,dateMinValue,dateMaxValue,page,tagValue).subscribe(data => {
-      
-          this.tab_images = data.photos.photo
-          this.loading =false
-          if (data.photos.total == 0)
-          {
-            this.error =true
-            this.errorMessage = "Aucunes images ne correspond à vos critères"
-          }
-          if(data.photos.pages > 100)
-            this.page_number = 100
-          else
-            this.page_number = data.photos.pages;
-        }
-        )
-      }
+        this.service.getImagesBySearch(inputValue,dateMinValue,dateMaxValue,this.page_position,safeSearch,tagValue).subscribe(data => {
+          this.manageResult(data,"Aucunes images ne correspond à vos critères")
+        })
     }
     else
-    {
-      this.service.getAnyImages().subscribe(data => {
-        console.log(data)
-        this.error =true
-        this.errorMessage = "Veuillez mettre des critères de recherches plus précis"
-        this.tab_images = data.photos.photo
-        this.page_number = 0;
-        this.loading =false
-      })
-    }
-  }
-  ngOnInit(): void {
-    this.loading =true
-    this.service.getAnyImages().subscribe(data => {
-      console.log(data)
-      this.tab_images = data.photos.photo
-      this.page_number = 0;
-      this.loading =false
-    })
+      this.getImagesHome(true,"Veuillez mettre plus de critères de recherches")
   }
 getImagesOfAuthor(page:number): void{
   this.loading =true
   this.error =false
   this.page_position= this.regulatePagePosition(page)
   var authorsValue = (<HTMLInputElement>document.getElementById("author")).value;
-  if (!authorsValue){
-    this.service.getAnyImages().subscribe(data => {
-      this.tab_images = data.photos.photo
-      this.loading =false
-      this.page_number = 0;
-    })
-  }
-  else {
+  var safeSearch = '3'
+    if (this.safeMode){
+      safeSearch = '1'
+    }
+  if (!authorsValue)
+    this.getImagesHome(true,"L'utilisateur n'a pas été trouvé ")
+  else 
     this.service.getOwnerIdbyName(authorsValue).subscribe(data => {
-      console.log(data)
-      this.loading =false
       if (data.user)
       {
-        this.service.getImagesOfPeople(data.user.id,this.service.images_per_page,this.page_position).subscribe(data => {
-          this.tab_images = data.photos.photo
-          if (data.photos.total == 0)
-          {
-            this.error =true
-            this.errorMessage = "L'utilisateur ne possède aucunes images"
-          }
-          if(data.photos.pages > 10)
-            this.page_number = 100
-          else
-            this.page_number = data.photos.pages;
+        this.service.getImagesOfPeople(data.user.id,this.service.images_per_page,this.page_position,safeSearch).subscribe(data => {
+          this.manageResult(data,"L'utilisateur ne possède aucunes images")
       })
     }
-    else {
-      this.service.getAnyImages().subscribe(data => {
-        this.tab_images = data.photos.photo
-        this.page_number = 0;
-        this.error = true;
-        this.errorMessage = "L'utilisateur n'a pas été trouvé "
-      })
-    }
+    else 
+      this.getImagesHome(true,"L'utilisateur n'a pas été trouvé")
   })
-  }
 }
+
 }

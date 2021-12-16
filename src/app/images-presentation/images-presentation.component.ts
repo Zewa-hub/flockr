@@ -38,7 +38,7 @@ export class ImagesPresentationComponent implements OnInit {
   OpenDialog(image :any)
   {
     
-    const modalRef = this.modalService.open(NgbdModalContentComponent);
+    const modalRef = this.modalService.open(NgbdModalContentComponent,{size:'xl'});
     modalRef.componentInstance.image = image;
   }
   
