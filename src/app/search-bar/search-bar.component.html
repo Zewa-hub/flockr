@@ -1,14 +1,36 @@
 <p>search-bar works!</p>
 <div>
-    <input id="search" type="text" placeholder="Find everything !">
-    <label for="date_min">Date minimum</label><input id="date_min" type="date">
-    <label for="date_min">Date maximum</label><input id="date_max" type="date">
-    <label for="tag">Tag</label><input id="tag" type="text" placeholder="add tag for your research !">
-    <label for="tag">Auteur</label><input id="tag" type="text" placeholder="Search by author">
-    <p>pagination + barre de chargement + taille de page modifiable +sort by date</p>
-    <button  (click)="getImages()">Search !</button>
+    <div *ngIf="authorMode; else NoAuthor">
+        <label for="author">Auteur</label><input id="author" type="text" placeholder="Search by author">
+        <button  (click)="getImagesOfAuthor(1)">Search !</button>
+    </div>
+    <ng-template #NoAuthor>
+        <input id="search" type="text" placeholder="Find everything !">
+        <label for="date_min">Date minimum</label><input id="date_min" type="date">
+        <label for="date_max">Date maximum</label><input id="date_max" type="date">
+        <label for="tag">Tag</label><input id="tag" type="text" placeholder="add tag for your research !">
+        <button  (click)="getImages(1)">Search !</button>
+    </ng-template>
     <br>
-    <label>List <input type="checkbox" (change)="changeAffichage()" [checked] = "affichage"></label>
+    <label>List <input type="checkbox" (change)="changeAffichageMode()" [checked] = "affichageMode"></label>
     <label>SafeSearch <input type="checkbox" name="SafeSearch" checked="true"></label>
+    <label>Authors <input type="checkbox" (change)="changeAuthorMode()" [checked] = "authorMode"></label>
 </div>
-<images-presentation [message]=affichage [list_images]=tab_images></images-presentation>
+
+<div *ngIf="page_number; else NoPageNumber"> 
+    <p>Page: {{page_position}} / {{page_number}}</p>
+    <div>
+        <button (click)="getImages(page_position-1)"><-</button>
+        <button (click)="getImages(page_position+1)">-></button>
+    </div>
+</div>
+<ng-template #NoPageNumber></ng-template>
+
+<div *ngIf="loading; else NoLoading">
+    <div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    
+</div>
+<ng-template #NoLoading>
+    <images-presentation [message]=affichageMode [list_images]=tab_images></images-presentation>
+</ng-template>
+<hr>

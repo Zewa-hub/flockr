@@ -4,6 +4,7 @@ import { Observable, throwError } from 'rxjs';
 
 export interface PhotosFlickr {
   photos: {
+    pages :number,
     photo:[{
       server: string,
       id: string,
@@ -20,25 +21,36 @@ export interface CommentsFlickr {
     }]
   }
 }
-
+export interface PeopleFlickr {
+  user: {
+    id :string;
+  }
+}
 @Injectable({
   providedIn: 'root'
 })
 
 export class FlickrService {
   constructor(private http : HttpClient) { }
+  images_per_page:number = 40;
   getAnyImages() : Observable<PhotosFlickr>{
     return this.http.get<PhotosFlickr>("https://www.flickr.com/services/rest/",{
-      params: {
-        method: 'flickr.photos.getRecent',
+      params: {         
+        text: "",
+        method: 'flickr.photos.search',
         format: 'json',
-        api_key: '10f83f31283d58084c74937adbb8b561',
-        extras: 'tags,date_taken,owner_name,url_q,url_m,o_dims,geo',
-        nojsoncallback: "?"
-      }
-    })
+        nojsoncallback: '?',
+        tag_mode: 'all',
+        media: 'photos',
+        per_page: this.images_per_page,
+        safe_search: '1',
+        accuracy : 16, 
+        extras: 'tags,date_taken,owner_name,url_q,url_m,o_dims,geo', 
+        api_key: '10f83f31283d58084c74937adbb8b561'
+    }
+  })
   }
-  getImagesBySearch(search:string, parameter? : any) : Observable<PhotosFlickr>
+  getImagesBySearch(search:string, date_min:string ,date_max: string,page :number,tag?:string) : Observable<PhotosFlickr>
   {
     return this.http.get<PhotosFlickr>("https://www.flickr.com/services/rest/",{
       params: {         
@@ -47,24 +59,40 @@ export class FlickrService {
           format: 'json',
           nojsoncallback: '?',
           tag_mode: 'all',
+          tags: tag ?? search,
+          min_upload_date: date_min,
+          max_upload_date: date_max,
           media: 'photos',
-          per_page: '15',
+          per_page: this.images_per_page,
+          page: page,
           accuracy : 16, 
           extras: 'tags,date_taken,owner_name,url_q,url_m,o_dims,geo', 
           api_key: '10f83f31283d58084c74937adbb8b561'
       }
     })
-    //.pipe(map((response : any) => response.photos.photo));
   }
-  getImagesOfPeople(user:string) : Observable<PhotosFlickr>{
+  getImagesOfPeople(user:string, page_size:number,page:number) : Observable<PhotosFlickr>{
     return this.http.get<PhotosFlickr>("https://www.flickr.com/services/rest/",{
       params: {
         method: 'flickr.people.getPhotos',
         format: 'json',
         user_id: user,
-        per_page: '3',
+        per_page: page_size,
+        page: page,
         api_key: '10f83f31283d58084c74937adbb8b561',
         extras: 'tags,date_taken,owner_name,url_q,url_m,o_dims,geo',
+        nojsoncallback: "?"
+      }
+    })
+  }
+  getOwnerIdbyName(user:string): Observable<PeopleFlickr>
+  {
+    return this.http.get<PeopleFlickr>("https://www.flickr.com/services/rest/",{
+      params: {
+        method: 'flickr.people.findByUsername',
+        format: 'json',
+        username: user,
+        api_key: '10f83f31283d58084c74937adbb8b561',
         nojsoncallback: "?"
       }
     })

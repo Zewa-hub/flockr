@@ -16,7 +16,7 @@ export class NgbdModalContentComponent implements OnInit {
   constructor(public activeModal: NgbActiveModal,private service:FlickrService) {}
   ngOnInit(): void {
     console.log(this.image)
-    this.service.getImagesOfPeople(this.image.owner).subscribe(data => {
+    this.service.getImagesOfPeople(this.image.owner,3,1).subscribe(data => {
       this.author_images = data.photos.photo
     })
     this.service.getCommentOfPhoto(this.image.id).subscribe(data => {

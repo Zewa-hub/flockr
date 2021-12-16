@@ -13,39 +13,130 @@ import { FlickrService } from '../flickr.service';
   styleUrls: ['./search-bar.component.css']
 })
 export class SearchBarComponent implements OnInit {
-  affichage :boolean = true;
+  affichageMode :boolean = true;
   tab_images :any[] = [];
+  authorMode :boolean = false;
+  nomRecherche:string ="";
+  page_number:number = 0;
+  page_position:number = 1;
+  loading:boolean = false;
+
   constructor(private http : HttpClient, private service : FlickrService) { }
-  changeAffichage() :void
+  changeAffichageMode() :void
   {
-    if (this.affichage)
-    {
-      this.affichage = false;
-    }
-    else{
-      this.affichage =true;
-    }
+    if (this.affichageMode)
+      this.affichageMode = false;
+    else
+      this.affichageMode =true;
   }
-  getImages():void {
-    var inputValue = (<HTMLInputElement>document.getElementById("search")).value;
-    if (!inputValue)
+  changeAuthorMode() :void
+  {
+    if (this.authorMode)
+      this.authorMode= false;
+    else
+      this.authorMode =true;
+  }
+  regulatePagePosition(page:number):number{
+    if (this.page_number == 0)
     {
-      this.service.getAnyImages().subscribe(data => {
-        this.tab_images = data.photos.photo
-      })
+      return 1
+    }
+    if(page > 0){
+      if (page % this.page_number == 0)
+        return 1
+      else 
+        return page % this.page_number;
+    }
+    else 
+      return this.page_number;
+  }
+  getImages(page:number):void {
+    this.loading =true
+    this.page_position = this.regulatePagePosition(page)
+    var inputValue = (<HTMLInputElement>document.getElementById("search")).value;
+    var dateMinValue = (<HTMLInputElement>document.getElementById("date_min")).value;
+    var dateMaxValue = (<HTMLInputElement>document.getElementById("date_max")).value;
+    var tagValue = (<HTMLInputElement>document.getElementById("tag")).value;
+    if (inputValue || tagValue)
+    {
+      if (!tagValue)
+      {
+        this.service.getImagesBySearch(inputValue,dateMinValue,dateMaxValue,this.page_position).subscribe(data => {
+          this.tab_images = data.photos.photo
+          this.loading =false
+          if(data.photos.pages > 100)
+            this.page_number = 100
+          else
+            this.page_number = data.photos.pages;
+            
+        })
+      }
+      else
+      {
+        this.service.getImagesBySearch(inputValue,dateMinValue,dateMaxValue,page,tagValue).subscribe(data => {
+      
+          this.tab_images = data.photos.photo
+          this.loading =false
+          if(data.photos.pages > 100)
+            this.page_number = 100
+          else
+            this.page_number = data.photos.pages;
+        }
+        )
+      }
     }
     else
     {
-      this.service.getImagesBySearch(inputValue).subscribe(data => {
-    
-        this.tab_images = data.photos.photo}
-      )
+      this.service.getAnyImages().subscribe(data => {
+        console.log(data)
+        this.tab_images = data.photos.photo
+        this.page_number = 0;
+        this.loading =false
+      })
     }
   }
   ngOnInit(): void {
+    this.loading =true
     this.service.getAnyImages().subscribe(data => {
       console.log(data)
       this.tab_images = data.photos.photo
+      this.page_number = 0;
+      this.loading =false
     })
   }
+getImagesOfAuthor(page:number): void{
+  this.loading =true
+  this.page_position= this.regulatePagePosition(page)
+  var authorsValue = (<HTMLInputElement>document.getElementById("author")).value;
+  if (!authorsValue){
+    this.service.getAnyImages().subscribe(data => {
+      this.tab_images = data.photos.photo
+      this.loading =false
+      this.page_number = 0;
+    })
+  }
+  else {
+    this.service.getOwnerIdbyName(authorsValue).subscribe(data => {
+      console.log(data)
+      if (data.user)
+      {
+        this.service.getImagesOfPeople(data.user.id,40,this.page_position).subscribe(data => {
+          this.tab_images = data.photos.photo
+          this.loading =false
+          if(data.photos.pages > 10)
+            this.page_number = 100
+          else
+            this.page_number = data.photos.pages;
+      })
+    }
+    else {
+      this.service.getAnyImages().subscribe(data => {
+        this.loading =false
+        this.tab_images = data.photos.photo
+        this.page_number = 0;
+      })
+    }
+  })
+  }
+}
 }
