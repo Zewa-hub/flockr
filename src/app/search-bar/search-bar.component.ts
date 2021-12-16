@@ -20,6 +20,7 @@ export class SearchBarComponent implements OnInit {
   page_number:number = 0;
   page_position:number = 1;
   loading:boolean = false;
+  error:boolean = false;
 
   constructor(private http : HttpClient, private service : FlickrService) { }
   changeAffichageMode() :void
@@ -43,7 +44,7 @@ export class SearchBarComponent implements OnInit {
     }
     if(page > 0){
       if (page % this.page_number == 0)
-        return 1
+        return this.page_number
       else 
         return page % this.page_number;
     }
@@ -52,6 +53,7 @@ export class SearchBarComponent implements OnInit {
   }
   getImages(page:number):void {
     this.loading =true
+    this.loading =false
     this.page_position = this.regulatePagePosition(page)
     var inputValue = (<HTMLInputElement>document.getElementById("search")).value;
     var dateMinValue = (<HTMLInputElement>document.getElementById("date_min")).value;
@@ -106,6 +108,7 @@ export class SearchBarComponent implements OnInit {
   }
 getImagesOfAuthor(page:number): void{
   this.loading =true
+  this.error =false
   this.page_position= this.regulatePagePosition(page)
   var authorsValue = (<HTMLInputElement>document.getElementById("author")).value;
   if (!authorsValue){
@@ -118,11 +121,12 @@ getImagesOfAuthor(page:number): void{
   else {
     this.service.getOwnerIdbyName(authorsValue).subscribe(data => {
       console.log(data)
+      this.loading =false
       if (data.user)
       {
-        this.service.getImagesOfPeople(data.user.id,40,this.page_position).subscribe(data => {
+        this.service.getImagesOfPeople(data.user.id,this.service.images_per_page,this.page_position).subscribe(data => {
           this.tab_images = data.photos.photo
-          this.loading =false
+          
           if(data.photos.pages > 10)
             this.page_number = 100
           else
@@ -131,9 +135,9 @@ getImagesOfAuthor(page:number): void{
     }
     else {
       this.service.getAnyImages().subscribe(data => {
-        this.loading =false
         this.tab_images = data.photos.photo
         this.page_number = 0;
+        this.error = true;
       })
     }
   })

@@ -17,15 +17,24 @@
     <label>Authors <input type="checkbox" (change)="changeAuthorMode()" [checked] = "authorMode"></label>
 </div>
 
-<div *ngIf="page_number; else NoPageNumber"> 
+<div *ngIf="page_number && authorMode"> 
+    <p>Page: {{page_position}} / {{page_number}}</p>
+    <div>
+        <button (click)="getImagesOfAuthor(page_position-1)"><-</button>
+        <button (click)="getImagesOfAuthor(page_position+1)">-></button>
+    </div>
+</div>
+<div *ngIf="page_number && !authorMode"> 
     <p>Page: {{page_position}} / {{page_number}}</p>
     <div>
         <button (click)="getImages(page_position-1)"><-</button>
         <button (click)="getImages(page_position+1)">-></button>
     </div>
 </div>
-<ng-template #NoPageNumber></ng-template>
-
+<div *ngIf="error">
+    <p>Erreur dans la requête</p>
+    
+</div>
 <div *ngIf="loading; else NoLoading">
     <div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
     
